@@ -14,3 +14,23 @@
 //= require activestorage
 //= require turbolinks
 //= require_tree .
+
+function addEventHandler(elem, eventType, handler) {
+  if (elem.addEventListener) elem.addEventListener(eventType, handler, false);
+  else if (elem.attachEvent) elem.attachEvent("on" + eventType, handler);
+}
+
+addEventHandler(document, "DOMContentLoaded", function() {
+  searchInput = document.getElementById("SearchBox");
+  addEventHandler(searchInput, "keyup", function() {
+    const query = searchInput.value;
+    const url = new URL("http://localhost:3000/search");
+    url.search = new URLSearchParams({ query });
+    fetch(url)
+      .then(response => response.json())
+      .then(json => {
+        console.table(json.data);
+      })
+      .catch(() => console.error("Server Error"));
+  });
+});
