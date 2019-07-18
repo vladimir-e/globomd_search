@@ -3,10 +3,13 @@ class HomeController < ApplicationController
   end
 
   def search
-    data = [
-      { text: Procedure.order('RANDOM()').first.title, url: '/example' },
-      { text: Provider.order('RANDOM()').first.full_name, url: '/example' }
-    ]
-    render json: { data: data, query: params[:query] }
+    procedures = Procedure.search(params[:query])
+    rows = procedures.map { |procedure| { text: procedure.title, url: '/example' } }
+
+    providers = Provider.search(params[:query])
+    rows.push *providers.map{ |provider| { text: provider.full_name, url: '/example' } }
+
+    render json: { data: rows, query: params[:query] }
   end
+
 end
